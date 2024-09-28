@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { AntDesign } from "../global/MyIcon";
 
 const Order = () => {
+  const [time, setTime] = useState(20)
+  const addTime = () => {
+    setTime(time + 10)
+  }
+  const substractTime = () => {
+    if (time === 0) {
+      return
+    }
+    setTime(time - 10)
+  }
   const Header = () => {
     return (
       <View style={styles.headerContainer} >
@@ -32,7 +42,7 @@ const Order = () => {
   const BillItem = ({ quantity, name, price }) => {
     return (
       <View style={styles.billItemRow} >
-        <Text style={styles.text}>{`${quantity} * ${name}`}</Text>
+        <Text style={styles.text}>{`${quantity} X ${name}`}</Text>
         <Text style={styles.text}>{`Rs ${price}`}</Text>
       </View>
     )
@@ -57,7 +67,7 @@ const Order = () => {
       <View>
         <View style={styles.billItemsContainer}>
           {items?.map(item =>
-            <BillItem quantity={item?.quantity} name={item?.name} price={item?.price} />
+            <BillItem key={item.id} quantity={item?.quantity} name={item?.name} price={item?.price} />
           )}
         </View>
         <View style={[styles.billTotalRow, { paddingTop: 30 }]}>
@@ -72,18 +82,35 @@ const Order = () => {
       </View>
     )
   }
-  const Button = ({ title, onPress, style = {} }) => {
+  const Button = ({ onPress, style = {}, textStyle = {}, isIcon = false, Icon = <View />, title = '' }) => {
     return (
       <TouchableOpacity onPress={onPress} style={[styles.button, style]} >
-        <Text style={styles.text}>{title}</Text>
+        {isIcon ?
+          Icon
+          :
+          <Text style={[styles.text, textStyle]}>{title}</Text>
+        }
       </TouchableOpacity>
+    )
+  }
+
+  const Timer = () => {
+    return (
+      <>
+      <Text style={[styles.text, {fontSize: 14, marginBottom: 10, marginTop: 90, marginLeft: 10}]} >Set food prep time</Text>
+        <View style={styles.timerRow} >
+          <Button onPress={substractTime} isIcon Icon={<AntDesign name='minus' size={20} color='black' />} style={{ flex: 1.5, borderBottomRightRadius: 0, borderTopRightRadius: 0, }} />
+          <Button title={`${time} minutes`} style={{ flex: 6, borderRadius: 0, borderLeftWidth: 1, borderRightWidth: 1, borderLeftColor: 'black', borderRightColor: 'black', }} />
+          <Button onPress={addTime} isIcon Icon={<AntDesign name='plus' size={20} color='black' />} style={{ flex: 1.5, borderBottomLeftRadius: 0, borderTopLeftRadius: 0, }} />
+        </View>
+      </>
     )
   }
   const ActionButtons = () => {
     return (
       <View style={styles.actionButtonsRow}>
-        <Button title='Reject' style={{ width: '40%' }} />
-        <Button title='Approve' style={{ width: '55%' }} />
+        <Button title='Reject' style={{ width: '35%' }} textStyle={{fontSize: 16}} />
+        <Button title='Accept' style={{ width: '60%' }} textStyle={{fontSize: 16}} />
       </View>
     )
   }
@@ -95,9 +122,9 @@ const Order = () => {
           <OrderBy />
           <CustomerBox />
           <Bill />
+          <Timer />
           <ActionButtons />
         </View>
-
       </ScrollView>
     </View>
   )
@@ -177,15 +204,15 @@ const styles = StyleSheet.create({
   },
   paidBg: {
     paddingVertical: 0.5,
-    paddingHorizontal: 8,
+    paddingHorizontal: 18,
     marginLeft: 10,
-    borderRadius: 10,
+    borderRadius: 6,
     backgroundColor: 'rgba(128,128,128, 0.3)',
     alignItems: 'center',
     justifyContent: 'center'
   },
   button: {
-    borderRadius: 50,
+    borderRadius: 20,
     backgroundColor: 'rgba(128,128,128, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -194,6 +221,11 @@ const styles = StyleSheet.create({
   actionButtonsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginTop: 40
+  },
+  timerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 })
